@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Real-Time Chat</title>
+	<style>
+		.flex {
+			display: flex;
+		}
+
+		.flex-col {
+			flex-direction: column;
+		}
+
+		.items-center {
+			align-items: center;
+		}
+
+		.bg-blue-300 {
+			background-color: #6EE7B7; 
+			border-radius: 10px; 
+			padding: 10px; 
+		}
+
+	
+		.btn {
+			background-color: #3498db; 
+			color: #fff; 
+			padding: 8px 15px;
+			border: none; 
+			border-radius: 5px; 
+			cursor: pointer; 
+		}
+
+		.btn:hover {
+			background-color: #2980b9; 
+		}
+	</style>
+</head>
+
+<body style="background-color: #3498db;"> 
+	<div class="flex flex-col items-center bg-blue-300"> 
+		<h1>Chat with CRUD</h1>
+		<h2>Your Unique ID: <span id="ws-id"></span></h2>
+		<form action="" onsubmit="sendMessage(event)">
+			<input class="bg-blue-300" type="text" id="messageText" autocomplete="off" />
+			<button class="btn">Send</button>
+		</form>
+		<ul id='messages'> </ul>
+	</div>
+	<script>
+		function appendMessage(msg) {
+			let messages = document.getElementById('messages');
+			let message = document.createElement('li');
+			let content = document.createTextNode(msg);
+			message.appendChild(content);
+			messages.appendChild(message);
+		}
+
+		let client_id = Math.floor(Math.random() * 1000) + 1;
+		document.querySelector("#ws-id").textContent = client_id;
+
+		// Use the correct WebSocket protocol and server URL
+		let ws = new WebSocket(`{{ ws_protocol }}://{{ server_urn }}/ws/${client_id}`);
+
+		ws.onmessage = function(event) {
+			appendMessage(event.data);
+		};
+
+		function sendMessage(event) {
+			let input = document.getElementById("messageText");
+			ws.send(input.value);
+			input.value = '';
+			event.preventDefault();
+		}
+	</script>
+</body>
+
+</html>
